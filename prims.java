@@ -1,64 +1,85 @@
 import java.util.*;
 
+public class primsAlgo {
+    public static class Edge{
+        int src, dest, wt;
 
-public class prims {
-    public static void main(String args[]){
-        Scanner sc = new Scanner(System.in);
-
-        System.out.println("Enter number of Nodes :");
-        int nodes = sc.nextInt();
-        int arr[][] = new int[nodes][nodes];
-        String Nodes[] = new String[5];
-        int visit[] = new int[nodes];
-        int minCost=0, count = 1, cost = 0;
-        int minIndex =-1;
-
-        System.out.println("Enter Nodes :");
-        for(int i=0; i<nodes; i++){
-            Nodes[i] = sc.next();
+        Edge(int src, int dest, int wt){
+            this.src=src;
+            this.dest=dest;
+            this.wt=wt;
         }
 
-        System.out.println("Enter weight of each edge :");
-        for(int i=0; i<nodes; i++){
-            for(int j=0; j<nodes; j++){
-                System.out.println(Nodes[i]+" and "+Nodes[j]);
-                arr[i][j] = sc.nextInt();
-            }
+    }
+
+    public static class Pair implements Comparable<Pair>{
+        int node, cost;
+
+        public Pair(int node, int cost){
+            this.node = node;
+            this.cost = cost;
         }
+        @Override
+        public int compareTo (Pair p){
+            return(this.cost - p.cost);
+    }
+    }
+    
+
+    public static void createGraph(ArrayList <Edge> graph[], int src){
+        for(int  i=0; i<graph.length; i++){
+            graph[i] = new ArrayList<>();
+        }
+
+        graph[0].add(new Edge(0,1,10));
+        graph[0].add(new Edge(0,2,15));
+        graph[0].add(new Edge(0,3,30));
+
+        graph[1].add(new Edge(1,0,10));
+        graph[1].add(new Edge(1,3,40));
+
+        graph[2].add(new Edge(2,0,15));
+        graph[2].add(new Edge(2,3,50));
+
+        graph[3].add(new Edge(3,1,40));
+        graph[0].add(new Edge(3,2,50));
+        // graph[0].add(new Edge(3,0,30));
+    }
+
+    public static void Prims(ArrayList<Edge>graph[], int V){
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        boolean[] visit = new boolean[V];
+        pq.add(new Pair(0, 0));
+        int mstCost = 0;
         
-        for(int i=0; i<nodes; i++){
-            visit[i] = 0;
-        }
 
-        System.out.print("Shortest Path : ");
-        visit[0] = 1;
-        System.out.print(Nodes[0]+" -> ");
+        while(! pq.isEmpty()){
+            Pair curr = pq.remove();
 
-        while(true){
-            minCost = 1000;
-            for(int i=0; i<nodes; i++){
-                for(int j=0; j<nodes; j++){
-                    if(visit[i]==0 && arr[i][j]!=0 && arr[i][j]<minCost && visit[j] == 0){
-                        minCost = arr[i][j];
-                        minIndex = j;
+            if(! visit[curr.node]){
+                visit[curr.node] = true;
+                mstCost += curr.cost;
+
+                for(int i=0; i<graph[curr.node].size(); i++){
+                    Edge e = graph[curr.node].get(i);
+
+                    if(! visit[e.dest]){
+                        pq.add(new Pair(e.dest, e.wt));
                     }
                 }
             }
-            
-            visit[minIndex] = 1;
-            System.out.print(Nodes[minIndex]+" -> ");
-            cost = cost + minCost;
-            count++;
-
-            if(count == nodes){
-                break;
-            }
-
         }
+        System.out.println();
         
+        System.out.println("Min cost of Tree : "+mstCost);
+        
+    }
+    public static void main(String args[]){
+        int V = 4;
+        ArrayList <Edge> graph[] = new ArrayList[V];
 
+        createGraph(graph, V);
 
-
-
+        Prims(graph, V);
     }
 }
